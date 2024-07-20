@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Knowledge Quiz with Hangman</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .button-container {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #007bff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        #answer {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            transition: opacity 1s ease-in-out;
+        }
+        #hangman {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hangman-part {
+            width: 20px;
+            height: 20px;
+            background-color: #000;
+            margin: 2px;
+            display: inline-block;
+        }
+        #head { width: 30px; height: 30px; border-radius: 50%; }
+        #body { height: 60px; }
+        #left-arm, #right-arm { width: 60px; height: 10px; }
+        #left-leg, #right-leg { height: 60px; }
+        #scaffold {
+            text-align: left;
+            margin-right: 20px;
+        }
+        #scaffold div {
+            background: black;
+        }
+        #horizontal-bar { width: 100px; height: 10px; margin: 0 auto; }
+        #vertical-bar { width: 10px; height: 100px; margin: 0 auto; }
+        #beam { width: 100px; height: 10px; margin: 0 auto; }
+        #rope { width: 10px; height: 20px; margin: 0 auto; }
+        .hidden { display: none; }
+
+        #paypal-container {
+            margin-top: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        .paypal-button {
+            width: 100px; /* Adjust width to make button smaller */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="question">Question will appear here</h1>
+        <div class="button-container">
+            <button id="yes-btn" class="btn">Yes</button>
+            <button id="no-btn" class="btn">No</button>
+        </div>
+        <div id="answer">Answer will be shown here</div>
+        <div id="hangman">
+            <div id="scaffold">
+                <div id="horizontal-bar"></div>
+                <div id="vertical-bar"></div>
+                <div id="beam"></div>
+                <div id="rope"></div>
+            </div>
+            <div id="head" class="hangman-part hidden"></div>
+            <div id="body" class="hangman-part hidden"></div>
+            <div id="left-arm" class="hangman-part hidden"></div>
+            <div id="right-arm" class="hangman-part hidden"></div>
+            <div id="left-leg" class="hangman-part hidden"></div>
+            <div id="right-leg" class="hangman-part hidden"></div>
+        </div>
+        <div id="paypal-container">
+            <div id="paypal-container-RFB3KTBCSDD26"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "Is the capital of Canada Ottawa?", answer: "Yes" },
+            { question: "Did Shakespeare write 'Hamlet'?", answer: "Yes" },
+            { question: "Is the Red Planet Earth?", answer: "No" },
+            { question: "Is the Pacific Ocean the largest ocean?", answer: "Yes" },
+            { question: "Is 'O' the chemical symbol for Oxygen?", answer: "Yes" },
+            { question: "Did Picasso paint the Mona Lisa?", answer: "No" },
+            { question: "Is diamond the hardest natural substance?", answer: "Yes" },
+            { question: "Is Japan known as the Land of the Rising Sun?", answer: "Yes" },
+            { question: "Is Vatican City the smallest country?", answer: "Yes" },
+            { question: "Did the Titanic sink in 1912?", answer: "Yes" },
+            { question: "Was George Washington the first President of the USA?", answer: "Yes" },
+            { question: "Is Jupiter the largest planet in the solar system?", answer: "Yes" },
+            { question: "Is the Nile the longest river in the world?", answer: "Yes" },
+            { question: "Is guacamole made from tomatoes?", answer: "No" },
+            { question: "Did Alexander Fleming discover penicillin?", answer: "Yes" },
+            { question: "Is Canberra the capital of Australia?", answer: "Yes" },
+            { question: "Is 'Au' the chemical symbol for Gold?", answer: "Yes" },
+            { question: "Is Mercury the closest planet to the Sun?", answer: "Yes" },
+            { question: "Is the Blue Whale the largest mammal?", answer: "Yes" },
+            { question: "Is Mount Everest the tallest mountain in the world?", answer: "Yes" },
+            { question: "Is Paris the capital of France?", answer: "Yes" },
+            { question: "Did Harper Lee write 'To Kill a Mockingbird'?", answer: "Yes" },
+            { question: "Is New Zealand known as the Land of the Long White Cloud?", answer: "Yes" },
+            { question: "Is the stapes the smallest bone in the human body?", answer: "Yes" },
+            { question: "Is 'David' a sculpture by Leonardo da Vinci?", answer: "No" },
+            { question: "Is the Sahara the largest desert?", answer: "Yes" },
+            { question: "Is Portuguese the main language spoken in Brazil?", answer: "Yes" },
+            { question: "Is the Yangtze the longest river in Asia?", answer: "Yes" },
+            { question: "Is Isaac Newton known as the Father of Modern Physics?", answer: "Yes" },
+            { question: "Is Neptune known as the Ice Giant?", answer: "Yes" },
+            { question: "Did Vincent van Gogh paint 'Starry Night'?", answer: "Yes" },
+            { question: "Is NaCl the chemical formula for table salt?", answer: "Yes" },
+            { question: "Is Rome the capital of Italy?", answer: "Yes" },
+            { question: "Did Neil Armstrong walk on the Moon in 1969?", answer: "Yes" },
+            { question: "Is enamel the hardest part of the human body?", answer: "Yes" },
+            { question: "Is the Indian Ocean located to the east of Africa?", answer: "No" },
+            { question: "Is Greenland the largest island in the world?", answer: "Yes" },
+            { question: "Is Charles Darwin known for his theory of evolution?", answer: "Yes" },
+            { question: "Is the Yen the currency of Japan?", answer: "Yes" },
+            { question: "Is Russia the largest country by land area?", answer: "Yes" },
+            { question: "Did J.K. Rowling write 'Harry Potter'?", answer: "Yes" },
+            { question: "Is Nitrogen the main gas in Earth's atmosphere?", answer: "Yes" },
+            { question: "Is Italy the country known for inventing pizza?", answer: "Yes" },
+            { question: "Is Olympus Mons the name of the largest volcano in the solar system?", answer: "Yes" },
+            { question: "Is Cairo the capital city of Egypt?", answer: "Yes" },
+            { question: "Is Poseidon the Greek god of the sea?", answer: "Yes" },
+            { question: "Is Seoul the capital of South Korea?", answer: "Yes" },
+            { question: "Is Hydrogen the element with atomic number 1?", answer: "Yes" },
+            { question: "Is the Pound Sterling the currency of the United Kingdom?", answer: "Yes" },
+            { question: "Is the Amazon the longest river in South America?", answer: "Yes" },
+            { question: "Was Abraham Lincoln the 16th President of the United States?", answer: "Yes" },
+            { question: "Is Hogwarts the name of the fictional wizarding school in 'Harry Potter'?", answer: "Yes" },
+            { question: "Is Saturn known for its rings?", answer: "Yes" },
+            { question: "Is Madrid the capital of Spain?", answer: "Yes" },
+            { question: "Did Jane Austen write 'Pride and Prejudice'?", answer: "Yes" },
+            { question: "Is the Eiffel Tower located in Paris?", answer: "Yes" },
+            { question: "Is Australia a continent and a country?", answer: "Yes" },
+            { question: "Is Mount Kilimanjaro in Africa?", answer: "Yes" },
+            { question: "Is Beethoven known for composing symphonies?", answer: "Yes" },
+            { question: "Is the Amazon Rainforest located in Africa?", answer: "No" },
+            { question: "Is the Mona Lisa housed in the Louvre Museum?", answer: "Yes" },
+            { question: "Is the Great Wall of China visible from space?", answer: "No" },
+            { question: "Is soccer also known as football?", answer: "Yes" },
+            { question: "Is the currency of the USA the Euro?", answer: "No" },
+            { question: "Is the longest river in the world the Nile?", answer: "Yes" },
+            { question: "Is the Great Barrier Reef located in the Pacific Ocean?", answer: "No" },
+            { question: "Is Antarctica the coldest continent?", answer: "Yes" },
+            { question: "Is the Mona Lisa painted by Vincent van Gogh?", answer: "No" },
+            { question: "Is Tokyo the capital city of Japan?", answer: "Yes" },
+            { question: "Is the Nobel Prize awarded annually?", answer: "Yes" },
+            { question: "Is there more than one moon orbiting Earth?", answer: "No" },
+            { question: "Is William Shakespeare from England?", answer: "Yes" },
+            { question: "Is gold the most conductive metal?", answer: "No" }
+        ];
+
+        let currentQuestion = getRandomQuestion();
+        let mistakes = 0;
+        const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
+
+        function getRandomQuestion() {
+            return questions[Math.floor(Math.random() * questions.length)];
+        }
+
+        function showQuestion() {
+            document.getElementById('question').textContent = currentQuestion.question;
+            document.getElementById('answer').textContent = '';
+        }
+
+        function handleAnswer(answer) {
+            const correctAnswer = currentQuestion.answer;
+            if (answer === correctAnswer) {
+                document.getElementById('answer').textContent = 'Correct!';
+            } else {
+                document.getElementById('answer').textContent = 'Wrong!';
+                updateHangman();
+            }
+            setTimeout(nextQuestion, 1000);
+        }
+
+        function updateHangman() {
+            if (mistakes < hangmanParts.length) {
+                document.getElementById(hangmanParts[mistakes]).classList.remove('hidden');
+                mistakes++;
+            }
+            if (mistakes === hangmanParts.length) {
+                alert("Game Over! You've lost.");
+                restartGame();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion = getRandomQuestion();
+            showQuestion();
+        }
+
+        function restartGame() {
+            mistakes = 0;
+            hangmanParts.forEach(part => {
+                document.getElementById(part).classList.add('hidden');
+            });
+            nextQuestion();
+        }
+
+        document.getElementById('yes-btn').addEventListener('click', function() {
+            handleAnswer('Yes');
+        });
+
+        document.getElementById('no-btn').addEventListener('click', function() {
+            handleAnswer('No');
+        });
+
+        // PayPal Button Integration
+        document.addEventListener('DOMContentLoaded', function() {
+            paypal.HostedButtons({
+                hostedButtonId: "RFB3KTBCSDD26"
+            }).render("#paypal-container-RFB3KTBCSDD26");
+        });
+
+        // Initialize game
+        showQuestion();
+    </script>
+
+    <!-- PayPal Script -->
+    <script src="https://www.paypal.com/sdk/js?client-id=BAA6Nuxg8r_J3KJxnhF0mRhpWPK4hoFe4C8DKXRgvmyJ1tzE3BvaQLeukX6-TeozubvV7QnnJpYj0h_Q1Y&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
+</body>
+</html>
